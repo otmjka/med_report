@@ -1,0 +1,12 @@
+services:
+  worker:
+    build: ./worker
+    container_name: medcontrol-worker
+    restart: unless-stopped
+
+  report-api:
+    build: ../apps/report-api
+    container_name: medcontrol-report-api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
