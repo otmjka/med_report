@@ -1,6 +1,7 @@
 import { App } from './App/index.js';
 import { Broker } from './Broker/index.js';
 import Config from './Config.js';
+import { Db } from './Db/index.js';
 import { logger } from './logger/index.js';
 import Server from './Server.js';
 
@@ -14,8 +15,12 @@ const start = async () => {
   await broker.connect();
   await broker.assertTopology();
 
+  const db = new Db({ config, logger });
+  await db.init();
+
   const server = new Server({ config, logger });
-  const app = new App({ logger, config, server, broker });
+  await server.registerSwagger();
+  const app = new App({ logger, config, server, broker, db });
 
   app.initRoutes();
   await server.startServer();
@@ -25,6 +30,7 @@ const start = async () => {
     try {
       await server.stopServer();
       await broker.close();
+      await db.close();
       process.exit(0);
     } catch (err) {
       rootLogger.error('shutdown failed', err);
