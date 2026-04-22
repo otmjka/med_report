@@ -13,6 +13,7 @@ import {
   getClientByIdSchema,
   getClientReportsSchema,
 } from './schemas.js';
+import streamEvents from './streamEvents.js';
 
 class App {
   logger: winston.Logger;
@@ -52,6 +53,7 @@ class App {
       { schema: getClientReportsSchema },
       this.getClientReports,
     );
+    this.server.get('/events', streamEvents);
   }
 
   async getClients(_request: FastifyRequest, reply: FastifyReply) {
