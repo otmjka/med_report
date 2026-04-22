@@ -1,8 +1,23 @@
 services:
-  worker:
-    build: ./worker
-    container_name: medcontrol-worker
+  postgres:
+    image: postgres:16-alpine
+    container_name: medcontrol-postgres
     restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: medcontrol
+      POSTGRES_PASSWORD: medcontrol
+      POSTGRES_DB: medcontrol
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medcontrol -d medcontrol"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
@@ -31,9 +46,26 @@ services:
       - "3001:3001"
     environment:
       AMQP_URL: amqp://medcontrol:medcontrol@rabbitmq:5672
+      DATABASE_URL: postgres://medcontrol:medcontrol@postgres:5432/medcontrol
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  report-worker:
+    build: ../apps/report-worker
+    container_name: medcontrol-report-worker
+    restart: unless-stopped
+    environment:
+      AMQP_URL: amqp://medcontrol:medcontrol@rabbitmq:5672
+      DATABASE_URL: postgres://medcontrol:medcontrol@postgres:5432/medcontrol
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
 volumes:
   rabbitmq-data:
+  postgres-data:
