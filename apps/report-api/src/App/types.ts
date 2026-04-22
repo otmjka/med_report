@@ -4,6 +4,7 @@ import Config from '../Config.js';
 import Server from '../Server.js';
 import { Broker } from '../Broker/index.js';
 import { Db } from '../Db/index.js';
+import { SseHub } from '../Sse/index.js';
 import { createReportBody } from './requestSchemas.js';
 
 export type AppParams = {
@@ -12,6 +13,7 @@ export type AppParams = {
   server: Server;
   broker: Broker;
   db: Db;
+  sseHub: SseHub;
 };
 
 export type CreateReportBody = z.infer<typeof createReportBody>;

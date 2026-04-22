@@ -33,6 +33,13 @@ class Broker {
     this.logger.info(`exchange asserted: ${EXCHANGE} (topic, durable)`);
   }
 
+  async publish(routingKey: string, payload: unknown) {
+    if (!this.channel) throw new Error('channel not initialized');
+    const body = Buffer.from(JSON.stringify(payload));
+    this.channel.publish(EXCHANGE, routingKey, body, { persistent: true });
+    this.logger.info(`published key=${routingKey} bytes=${body.length}`);
+  }
+
   async subscribe(queue: string, routingKey: string, handler: MessageHandler) {
     if (!this.channel) throw new Error('channel not initialized');
 

@@ -29,11 +29,23 @@ const start = async () => {
       const generator = getGenerator(type);
       const { resultUrl } = await generator({ runId, clientId });
       await db.setReportDone(runId, resultUrl);
+      await broker.publish(`report.${type}.done`, {
+        runId,
+        type,
+        clientId,
+        resultUrl,
+      });
       rootLogger.info(`run=${runId} done resultUrl=${resultUrl}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       rootLogger.error(`run=${runId} failed: ${message}`);
       await db.setReportFailed(runId, message);
+      await broker.publish(`report.${type}.failed`, {
+        runId,
+        type,
+        clientId,
+        error: message,
+      });
       throw err;
     }
   });

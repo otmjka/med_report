@@ -3,6 +3,14 @@ import { RouterProvider } from 'react-router';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 
 import { queryClient, localStoragePersister } from '@/shared/queryClient';
+import { Toaster } from '@/shared/ui/sonner';
+
+import useSseDispatcher from './useSseDispatcher';
+
+const SseBridge: FC = () => {
+  useSseDispatcher();
+  return null;
+};
 
 const App: FC<{
   appRouter: Parameters<typeof RouterProvider>[0]['router'];
@@ -13,6 +21,8 @@ const App: FC<{
         client={queryClient}
         persistOptions={{ persister: localStoragePersister }}
       >
+        <SseBridge />
+        <Toaster position="top-right" />
         <RouterProvider router={appRouter} />
       </PersistQueryClientProvider>
     </StrictMode>

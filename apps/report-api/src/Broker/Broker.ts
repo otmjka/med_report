@@ -3,6 +3,11 @@ import winston from 'winston';
 
 import { BrokerParams, EXCHANGE } from './types.js';
 
+export type MessageHandler = (
+  payload: unknown,
+  routingKey: string,
+) => Promise<void> | void;
+
 class Broker {
   logger: winston.Logger;
   amqpUrl: string;
@@ -36,6 +41,33 @@ class Broker {
     const body = Buffer.from(JSON.stringify(payload));
     this.channel.publish(EXCHANGE, routingKey, body, { persistent: true });
     this.logger.info(`published key=${routingKey} bytes=${body.length}`);
+  }
+
+  async subscribeExclusive(routingKeys: string[], handler: MessageHandler) {
+    if (!this.channel) throw new Error('channel not initialized');
+
+    const { queue } = await this.channel.assertQueue('', {
+      exclusive: true,
+      autoDelete: true,
+    });
+    for (const key of routingKeys) {
+      await this.channel.bindQueue(queue, EXCHANGE, key);
+    }
+    this.logger.info(
+      `bound exclusive queue=${queue} keys=${routingKeys.join(',')}`,
+    );
+
+    await this.channel.consume(queue, async (msg) => {
+      if (!msg) return;
+      try {
+        const payload = JSON.parse(msg.content.toString());
+        await handler(payload, msg.fields.routingKey);
+        this.channel!.ack(msg);
+      } catch (err) {
+        this.logger.error(`handler failed queue=${queue}`, err);
+        this.channel!.nack(msg, false, false);
+      }
+    });
   }
 
   async close() {
