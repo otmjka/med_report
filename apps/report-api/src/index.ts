@@ -1,4 +1,5 @@
 import { App } from './App/index.js';
+import { Broker } from './Broker/index.js';
 import Config from './Config.js';
 import { logger } from './logger/index.js';
 import Server from './Server.js';
@@ -9,8 +10,12 @@ const start = async () => {
   rootLogger.info('start app');
 
   const config = new Config({ logger });
+  const broker = new Broker({ logger, config });
+  await broker.connect();
+  await broker.assertTopology();
+
   const server = new Server({ config, logger });
-  const app = new App({ logger, config, server });
+  const app = new App({ logger, config, server, broker });
 
   app.initRoutes();
   await server.startServer();
@@ -19,6 +24,7 @@ const start = async () => {
     rootLogger.info(`received ${signal}, shutting down`);
     try {
       await server.stopServer();
+      await broker.close();
       process.exit(0);
     } catch (err) {
       rootLogger.error('shutdown failed', err);

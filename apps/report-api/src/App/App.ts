@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import winston from 'winston';
 import { z } from 'zod';
 import Config from '../Config.js';
+import { Broker } from '../Broker/index.js';
 import { AppParams, CreateReportBody } from './types.js';
 import { createReportBody } from './requestSchemas.js';
 
@@ -10,12 +11,14 @@ class App {
   logger: winston.Logger;
   server: FastifyInstance;
   config: Config;
+  broker: Broker;
 
   constructor(params: AppParams) {
     this.logger = params.logger.child({ label: 'App' });
     this.logger.info('init app');
     this.config = params.config;
     this.server = params.server.getServer();
+    this.broker = params.broker;
 
     this.createReport = this.createReport.bind(this);
   }
@@ -36,8 +39,10 @@ class App {
         `create report run=${runId} type=${type} userId=${userId}`,
       );
 
-      // TODO: persist run in postgres (report_runs) and enqueue pg-boss job
-      // `report.${type}.validate` with payload { runId, userId }.
+      // TODO: persist run in postgres (report_runs) in the same transaction
+      // as an outbox row; a publisher worker would then ship events to the
+      // broker. Direct publish below is a shortcut for the MVP.
+      await this.broker.publish(`report.${type}.validate`, { runId, userId });
 
       reply.code(202).send({ runId, status: 'pending' });
     } catch (error) {

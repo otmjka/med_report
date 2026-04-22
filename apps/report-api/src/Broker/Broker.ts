@@ -1,0 +1,52 @@
+import * as amqp from 'amqplib';
+import winston from 'winston';
+
+import { BrokerParams, EXCHANGE } from './types.js';
+
+class Broker {
+  logger: winston.Logger;
+  amqpUrl: string;
+  connection?: amqp.ChannelModel;
+  channel?: amqp.Channel;
+
+  constructor({ logger, config }: BrokerParams) {
+    this.logger = logger.child({ label: 'Broker' });
+    this.amqpUrl = config.amqpUrl;
+  }
+
+  async connect() {
+    this.logger.info(`connecting to ${this.amqpUrl}`);
+    this.connection = await amqp.connect(this.amqpUrl);
+    this.channel = await this.connection.createChannel();
+
+    // TODO: reconnect on connection.close / error events.
+    // TODO: publisher confirms via createConfirmChannel for at-least-once.
+
+    this.logger.info('connected');
+  }
+
+  async assertTopology() {
+    if (!this.channel) throw new Error('channel not initialized');
+    await this.channel.assertExchange(EXCHANGE, 'topic', { durable: true });
+    this.logger.info(`exchange asserted: ${EXCHANGE} (topic, durable)`);
+  }
+
+  async publish(routingKey: string, payload: unknown) {
+    if (!this.channel) throw new Error('channel not initialized');
+    const body = Buffer.from(JSON.stringify(payload));
+    this.channel.publish(EXCHANGE, routingKey, body, { persistent: true });
+    this.logger.info(`published key=${routingKey} bytes=${body.length}`);
+  }
+
+  async close() {
+    try {
+      await this.channel?.close();
+      await this.connection?.close();
+      this.logger.info('closed');
+    } catch (err) {
+      this.logger.error('close failed', err);
+    }
+  }
+}
+
+export default Broker;
