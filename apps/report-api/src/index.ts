@@ -4,6 +4,7 @@ import Config from './Config.js';
 import { Db } from './Db/index.js';
 import { logger } from './logger/index.js';
 import Server from './Server.js';
+import { SseHub, subscribeReportEvents } from './Sse/index.js';
 
 const rootLogger = logger.child({ label: 'root' });
 
@@ -20,9 +21,11 @@ const start = async () => {
 
   const server = new Server({ config, logger });
   await server.registerSwagger();
-  const app = new App({ logger, config, server, broker, db });
+  const sseHub = new SseHub({ logger });
+  const app = new App({ logger, config, server, broker, db, sseHub });
 
   app.initRoutes();
+  await subscribeReportEvents(broker, sseHub);
   await server.startServer();
 
   const shutdown = async (signal: string) => {
