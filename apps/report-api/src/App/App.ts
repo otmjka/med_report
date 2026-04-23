@@ -5,7 +5,6 @@ import winston from 'winston';
 import Config from '../Config.js';
 import { Broker } from '../Broker/index.js';
 import { Db } from '../Db/index.js';
-import { SseHub } from '../Sse/index.js';
 import { NotFoundError } from '../errors.js';
 import { AppParams, CreateReportBody, IdParams } from './types.js';
 import { createReportBody } from './requestSchemas.js';
@@ -15,7 +14,6 @@ import {
   getClientByIdSchema,
   getClientReportsSchema,
 } from './schemas.js';
-import makeStreamEvents from './streamEvents.js';
 
 class App {
   logger: winston.Logger;
@@ -23,7 +21,6 @@ class App {
   config: Config;
   broker: Broker;
   db: Db;
-  sseHub: SseHub;
 
   constructor(params: AppParams) {
     this.logger = params.logger.child({ label: 'App' });
@@ -32,7 +29,6 @@ class App {
     this.server = params.server.getServer();
     this.broker = params.broker;
     this.db = params.db;
-    this.sseHub = params.sseHub;
 
     this.createReport = this.createReport.bind(this);
     this.getClients = this.getClients.bind(this);
@@ -57,7 +53,6 @@ class App {
       { schema: getClientReportsSchema },
       this.getClientReports,
     );
-    this.server.get('/events', makeStreamEvents(this.sseHub));
   }
 
   async registerStaticArtifacts() {

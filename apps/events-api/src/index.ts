@@ -1,29 +1,26 @@
-import { App } from './App/index.js';
 import { Broker } from './Broker/index.js';
 import Config from './Config.js';
-import { Db } from './Db/index.js';
 import { logger } from './logger/index.js';
 import Server from './Server.js';
+import { SseHub, subscribeReportEvents } from './Sse/index.js';
+import { makeStreamEvents } from './App/index.js';
 
 const rootLogger = logger.child({ label: 'root' });
 
 const start = async () => {
-  rootLogger.info('start app');
+  rootLogger.info('start events-api');
 
   const config = new Config({ logger });
   const broker = new Broker({ logger, config });
   await broker.connect();
   await broker.assertTopology();
 
-  const db = new Db({ config, logger });
-  await db.init();
-
   const server = new Server({ config, logger });
-  await server.registerSwagger();
-  const app = new App({ logger, config, server, broker, db });
+  const sseHub = new SseHub({ logger });
 
-  await app.registerStaticArtifacts();
-  app.initRoutes();
+  server.getServer().get('/events', makeStreamEvents(sseHub));
+
+  await subscribeReportEvents(broker, sseHub);
   await server.startServer();
 
   const shutdown = async (signal: string) => {
@@ -31,7 +28,6 @@ const start = async () => {
     try {
       await server.stopServer();
       await broker.close();
-      await db.close();
       process.exit(0);
     } catch (err) {
       rootLogger.error('shutdown failed', err);

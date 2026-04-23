@@ -8,7 +8,6 @@ const apiUrls = {
   baseUrl: BASE_URL,
   reports: `${BASE_URL}/reports`,
   clients: `${BASE_URL}/clients`,
-  events: `${BASE_URL}/events`,
 };
 
 export default apiUrls;

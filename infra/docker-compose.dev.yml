@@ -56,6 +56,18 @@ services:
       postgres:
         condition: service_healthy
 
+  events-api:
+    build: ../apps/events-api
+    container_name: medcontrol-events-api
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      AMQP_URL: amqp://medcontrol:medcontrol@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   report-worker:
     build: ../apps/report-worker
     container_name: medcontrol-report-worker

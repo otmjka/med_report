@@ -1,4 +1,4 @@
-import apiUrls from '../apiUrls';
+import eventsUrl from './eventsUrl';
 import type { SseEvent, SseEventName, SseListener } from './types';
 
 const EVENT_NAMES: SseEventName[] = [
@@ -26,7 +26,7 @@ function handleNamedEvent(name: SseEventName, raw: MessageEvent) {
 
 function ensureConnected() {
   if (eventSource) return;
-  eventSource = new EventSource(apiUrls.events);
+  eventSource = new EventSource(eventsUrl);
   for (const name of EVENT_NAMES) {
     eventSource.addEventListener(name, (raw) =>
       handleNamedEvent(name, raw as MessageEvent),
