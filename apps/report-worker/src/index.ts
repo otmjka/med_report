@@ -27,7 +27,12 @@ const start = async () => {
     try {
       await db.setReportRunning(runId);
       const generator = getGenerator(type);
-      const { resultUrl } = await generator({ runId, clientId });
+      const { resultUrl } = await generator({
+        runId,
+        clientId,
+        artifactsDir: config.artifactsDir,
+        pool: db.pool,
+      });
       await db.setReportDone(runId, resultUrl);
       await broker.publish(`report.${type}.done`, {
         runId,

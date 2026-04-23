@@ -1,0 +1,8 @@
+{
+  "clientId": 1,
+  "measurements": [
+    { "key": "weight", "value": 72.4, "unit": "kg" },
+    { "key": "body_fat", "value": 18.2, "unit": "%" },
+    { "key": "muscle_mass", "value": 34.1, "unit": "kg" }
+  ]
+}

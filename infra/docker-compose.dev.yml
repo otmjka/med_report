@@ -47,6 +47,9 @@ services:
     environment:
       AMQP_URL: amqp://medcontrol:medcontrol@rabbitmq:5672
       DATABASE_URL: postgres://medcontrol:medcontrol@postgres:5432/medcontrol
+      ARTIFACTS_DIR: /artifacts
+    volumes:
+      - artifacts:/artifacts:ro
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -60,6 +63,9 @@ services:
     environment:
       AMQP_URL: amqp://medcontrol:medcontrol@rabbitmq:5672
       DATABASE_URL: postgres://medcontrol:medcontrol@postgres:5432/medcontrol
+      ARTIFACTS_DIR: /artifacts
+    volumes:
+      - artifacts:/artifacts
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -69,3 +75,4 @@ services:
 volumes:
   rabbitmq-data:
   postgres-data:
+  artifacts:

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import fastifyStatic from '@fastify/static';
 import winston from 'winston';
 import Config from '../Config.js';
 import { Broker } from '../Broker/index.js';
@@ -57,6 +58,14 @@ class App {
       this.getClientReports,
     );
     this.server.get('/events', makeStreamEvents(this.sseHub));
+  }
+
+  async registerStaticArtifacts() {
+    await this.server.register(fastifyStatic, {
+      root: this.config.artifactsDir,
+      prefix: '/artifacts/',
+      decorateReply: false,
+    });
   }
 
   async getClients(_request: FastifyRequest, reply: FastifyReply) {
