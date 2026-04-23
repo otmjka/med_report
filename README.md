@@ -7,41 +7,21 @@ Report platform prototype.
 Requirements: Docker + Docker Compose.
 
 ```bash
-cd infra
-docker-compose up --build
+docker-compose -f infra/docker-compose.local.yml up --build
 ```
 
-Use `-d` to run in the background.
+Open http://localhost:5173.
 
-## Verify
-
-```bash
-# container status (all should be healthy)
-docker ps --filter "name=medcontrol"
-
-# API health endpoint
-curl localhost:3001/health
-# → {"status":"ok"}
-```
-
-## Stop
-
-```bash
-cd infra
-docker-compose down
-```
+Stop: `Ctrl+C`, or `docker-compose -f infra/docker-compose.local.yml down`.
+Full reset (drops volumes): add `-v` to `down`.
 
 ## Services
 
-| Service      | Port | Description                      |
-| ------------ | ---- | -------------------------------- |
-| `report-api` | 3001 | Fastify API for the platform     |
-| `worker`     | —    | Demo worker (echo + healthcheck) |
-
-## Local development (without Docker)
-
-```bash
-cd apps/report-api
-npm install
-npm run dev
-```
+| Service         | URL / Port              | Description                    |
+| --------------- | ----------------------- | ------------------------------ |
+| clinic-web-app  | http://localhost:5173   | React frontend                 |
+| report-api      | http://localhost:3001   | REST API (`/health`)           |
+| events-api      | http://localhost:3002   | SSE events (`/health`)         |
+| report-worker   | —                       | PDF/XLSX generator             |
+| postgres        | 5432                    | `medcontrol` / `medcontrol`    |
+| rabbitmq        | 5672, UI on 15672       | `medcontrol` / `medcontrol`    |
