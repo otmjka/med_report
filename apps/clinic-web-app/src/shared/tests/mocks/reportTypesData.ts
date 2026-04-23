@@ -1,16 +1,6 @@
-export const reportTypes = ['cosmofit', 'clients-summary'] as const;
+import type { GetReportTypesResponse } from '@/entities/reportType';
 
-export type ReportType = (typeof reportTypes)[number];
-
-export type ReportTypeDescriptor = {
-  type: ReportType;
-  label: string;
-  format: 'pdf' | 'xlsx';
-  requiresClient: boolean;
-  description: string;
-};
-
-export const reportTypeCatalog: ReportTypeDescriptor[] = [
+export const reportTypesData: GetReportTypesResponse = [
   {
     type: 'cosmofit',
     label: 'Cosmofit',

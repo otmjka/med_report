@@ -7,6 +7,7 @@ if (!BASE_URL) {
 const apiUrls = {
   baseUrl: BASE_URL,
   reports: `${BASE_URL}/reports`,
+  reportTypes: `${BASE_URL}/report-types`,
   clients: `${BASE_URL}/clients`,
 };
 

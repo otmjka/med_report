@@ -13,7 +13,10 @@ import {
   getClientsSchema,
   getClientByIdSchema,
   getClientReportsSchema,
+  getReportTypesSchema,
+  getAllReportsSchema,
 } from './schemas.js';
+import { reportTypeCatalog } from '../reportTypes.js';
 
 class App {
   logger: winston.Logger;
@@ -34,6 +37,8 @@ class App {
     this.getClients = this.getClients.bind(this);
     this.getClientById = this.getClientById.bind(this);
     this.getClientReports = this.getClientReports.bind(this);
+    this.getReportTypes = this.getReportTypes.bind(this);
+    this.getAllReports = this.getAllReports.bind(this);
   }
 
   initRoutes() {
@@ -41,6 +46,16 @@ class App {
       '/reports',
       { schema: createReportSchema },
       this.createReport,
+    );
+    this.server.get(
+      '/reports',
+      { schema: getAllReportsSchema },
+      this.getAllReports,
+    );
+    this.server.get(
+      '/report-types',
+      { schema: getReportTypesSchema },
+      this.getReportTypes,
     );
     this.server.get('/clients', { schema: getClientsSchema }, this.getClients);
     this.server.get(
@@ -53,6 +68,15 @@ class App {
       { schema: getClientReportsSchema },
       this.getClientReports,
     );
+  }
+
+  async getReportTypes(_request: FastifyRequest, reply: FastifyReply) {
+    reply.send(reportTypeCatalog);
+  }
+
+  async getAllReports(_request: FastifyRequest, reply: FastifyReply) {
+    const reports = await this.db.selectAllReports();
+    reply.send(reports);
   }
 
   async registerStaticArtifacts() {
