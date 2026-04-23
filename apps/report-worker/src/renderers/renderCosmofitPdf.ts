@@ -3,10 +3,16 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import PDFDocument from 'pdfkit';
 
-import { HttpLabResult } from '../dataSources/index.js';
 import { Renderer } from './types.js';
 
-export const renderCosmofitPdf: Renderer<HttpLabResult> = async ({
+export type CosmofitSource = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+};
+
+export const renderCosmofitPdf: Renderer<CosmofitSource> = async ({
   runId,
   data,
   artifactsDir,
