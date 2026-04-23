@@ -17,7 +17,8 @@ function useSseDispatcher() {
           return;
         case 'report.done':
           toast.success(`Report ${event.data.runId} is ready`);
-          queryClient.invalidateQueries({
+          queryClient.refetchQueries({ queryKey: ['reports'], exact: true });
+          queryClient.refetchQueries({
             queryKey: ['client', event.data.clientId, 'reports'],
           });
           return;
@@ -25,7 +26,8 @@ function useSseDispatcher() {
           toast.error(
             `Report ${event.data.runId} failed: ${event.data.error}`,
           );
-          queryClient.invalidateQueries({
+          queryClient.refetchQueries({ queryKey: ['reports'], exact: true });
+          queryClient.refetchQueries({
             queryKey: ['client', event.data.clientId, 'reports'],
           });
           return;

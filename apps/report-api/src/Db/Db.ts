@@ -9,6 +9,7 @@ import {
   Client,
   ClientReport,
   InsertClientReportParams,
+  ReportListItem,
 } from './types.js';
 
 class Db {
@@ -42,6 +43,13 @@ class Db {
       id,
     ]);
     return result.rows[0] ?? null;
+  }
+
+  async selectAllReports(): Promise<ReportListItem[]> {
+    const result = await this.pool.query<ReportListItem>(
+      clientReportsSql.selectAllReports,
+    );
+    return result.rows;
   }
 
   async selectReportsByClientId(clientId: number): Promise<ClientReport[]> {

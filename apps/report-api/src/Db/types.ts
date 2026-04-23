@@ -26,3 +26,8 @@ export type ClientReport = {
   created_at: Date;
   finished_at: Date | null;
 };
+
+export type ReportListItem = ClientReport & {
+  client_id: number | null;
+  client_name: string | null;
+};

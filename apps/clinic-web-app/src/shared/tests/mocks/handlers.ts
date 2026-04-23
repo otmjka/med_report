@@ -4,6 +4,8 @@ import apiUrls from '@/shared/api/apiUrls';
 
 import { clientsData } from './clientsData';
 import { clientReportsData } from './clientReportsData';
+import { reportTypesData } from './reportTypesData';
+import { reportsData } from './reportsData';
 
 export const handlers: HttpHandler[] = [
   http.get(apiUrls.clients, () => HttpResponse.json(clientsData)),
@@ -16,4 +18,6 @@ export const handlers: HttpHandler[] = [
   http.get(`${apiUrls.clients}/:id/reports`, () =>
     HttpResponse.json(clientReportsData),
   ),
+  http.get(apiUrls.reportTypes, () => HttpResponse.json(reportTypesData)),
+  http.get(apiUrls.reports, () => HttpResponse.json(reportsData)),
 ];
