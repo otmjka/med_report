@@ -19,9 +19,9 @@ Full reset (drops volumes): add `-v` to `down`.
 
 | Service         | URL / Port              | Description                    |
 | --------------- | ----------------------- | ------------------------------ |
-| clinic-web-app  | http://localhost:5173   | React frontend                 |
-| report-api      | http://localhost:3001   | REST API (`/health`)           |
-| events-api      | http://localhost:3002   | SSE events (`/health`)         |
+| clinic-web-app  | http://localhost:5173           | React frontend                 |
+| report-api      | http://localhost:3001 (`/docs`) | REST API + Swagger UI          |
+| events-api      | http://localhost:3002           | SSE events (`/health`)         |
 | report-worker   | —                       | PDF/XLSX generator             |
 | postgres        | 5432                    | `medcontrol` / `medcontrol`    |
 | rabbitmq        | 5672, UI on 15672       | `medcontrol` / `medcontrol`    |
