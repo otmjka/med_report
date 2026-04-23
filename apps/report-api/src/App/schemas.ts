@@ -37,7 +37,7 @@ const notFoundSchema = {
 export const createReportSchema = {
   body: {
     type: 'object',
-    required: ['type', 'clientId'],
+    required: ['type'],
     properties: {
       type: { type: 'string', enum: reportTypes },
       clientId: { type: 'integer' },

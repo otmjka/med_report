@@ -2,9 +2,12 @@ import { Pool } from 'pg';
 
 export type HandlerInput = {
   runId: string;
-  clientId: number;
   artifactsDir: string;
   pool: Pool;
+};
+
+export type CosmofitHandlerInput = HandlerInput & {
+  clientId: number;
 };
 
 export type HandlerResult = {
@@ -12,3 +15,7 @@ export type HandlerResult = {
 };
 
 export type Handler = (input: HandlerInput) => Promise<HandlerResult>;
+
+export type CosmofitHandler = (
+  input: CosmofitHandlerInput,
+) => Promise<HandlerResult>;

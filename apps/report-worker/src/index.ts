@@ -21,26 +21,30 @@ const start = async () => {
 
   await broker.subscribe('q.validate', 'report.*.validate', async (raw) => {
     const payload = validatePayload.parse(raw);
-    const { runId, type, clientId } = payload;
+    const { runId, type } = payload;
+    const clientId = type === 'cosmofit' ? payload.clientId : undefined;
 
-    rootLogger.info(`run=${runId} type=${type} clientId=${clientId} start`);
+    rootLogger.info(`run=${runId} type=${type} clientId=${clientId ?? '-'} start`);
 
     try {
       await db.setReportRunning(runId);
-      const handlerInput = {
-        runId,
-        clientId,
-        artifactsDir: config.artifactsDir,
-        pool: db.pool,
-      };
       let resultUrl: string;
       switch (type) {
         case 'cosmofit': {
-          ({ resultUrl } = await handlerCosmofitReport(handlerInput));
+          ({ resultUrl } = await handlerCosmofitReport({
+            runId,
+            clientId: payload.clientId,
+            artifactsDir: config.artifactsDir,
+            pool: db.pool,
+          }));
           break;
         }
         case 'clients-summary': {
-          ({ resultUrl } = await handlerClientsSummaryReport(handlerInput));
+          ({ resultUrl } = await handlerClientsSummaryReport({
+            runId,
+            artifactsDir: config.artifactsDir,
+            pool: db.pool,
+          }));
           break;
         }
         default: {
