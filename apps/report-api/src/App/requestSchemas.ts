@@ -1,7 +1,11 @@
 import { z } from 'zod';
-import { reportTypes } from '../reportTypes.js';
 
-export const createReportBody = z.object({
-  type: z.enum(reportTypes),
-  clientId: z.number().int().positive(),
-});
+export const createReportBody = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('cosmofit'),
+    clientId: z.number().int().positive(),
+  }),
+  z.object({
+    type: z.literal('clients-summary'),
+  }),
+]);

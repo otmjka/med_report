@@ -95,11 +95,13 @@ class App {
     request: FastifyRequest<{ Body: CreateReportBody }>,
     reply: FastifyReply,
   ) {
-    const { type, clientId } = createReportBody.parse(request.body);
+    const body = createReportBody.parse(request.body);
+    const { type } = body;
+    const clientId = type === 'cosmofit' ? body.clientId : undefined;
     const runId = randomUUID();
 
     this.logger.info(
-      `create report run=${runId} type=${type} clientId=${clientId}`,
+      `create report run=${runId} type=${type} clientId=${clientId ?? '-'}`,
     );
 
     await this.db.insertClientReport({ id: runId, type, clientId });

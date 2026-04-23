@@ -14,7 +14,7 @@ export type Client = {
 export type InsertClientReportParams = {
   id: string;
   type: string;
-  clientId: number;
+  clientId?: number;
 };
 
 export type ClientReport = {

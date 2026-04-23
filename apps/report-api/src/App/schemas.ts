@@ -1,5 +1,3 @@
-import { reportTypes } from '../reportTypes.js';
-
 const clientSchema = {
   type: 'object',
   properties: {
@@ -36,12 +34,25 @@ const notFoundSchema = {
 
 export const createReportSchema = {
   body: {
-    type: 'object',
-    required: ['type', 'clientId'],
-    properties: {
-      type: { type: 'string', enum: reportTypes },
-      clientId: { type: 'integer' },
-    },
+    oneOf: [
+      {
+        type: 'object',
+        required: ['type', 'clientId'],
+        additionalProperties: false,
+        properties: {
+          type: { type: 'string', const: 'cosmofit' },
+          clientId: { type: 'integer' },
+        },
+      },
+      {
+        type: 'object',
+        required: ['type'],
+        additionalProperties: false,
+        properties: {
+          type: { type: 'string', const: 'clients-summary' },
+        },
+      },
+    ],
   },
   response: {
     202: {

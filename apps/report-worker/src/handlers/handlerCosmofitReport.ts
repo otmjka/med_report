@@ -3,12 +3,12 @@ import {
   CosmofitSource,
   renderCosmofitPdf,
 } from '../renderers/index.js';
-import { Handler } from './types.js';
+import { CosmofitHandler } from './types.js';
 
 const handlerLogger = logger.child({ label: 'handlerCosmofitReport' });
 const SOURCE_BASE_URL = 'https://jsonplaceholder.typicode.com';
 
-export const handlerCosmofitReport: Handler = async ({
+export const handlerCosmofitReport: CosmofitHandler = async ({
   runId,
   clientId,
   artifactsDir,

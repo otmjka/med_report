@@ -60,7 +60,7 @@ class Db {
     await this.pool.query(clientReportsSql.insertClientReport, [
       id,
       type,
-      clientId,
+      clientId ?? null,
     ]);
   }
 
