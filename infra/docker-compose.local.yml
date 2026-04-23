@@ -1,0 +1,20 @@
+include:
+  - docker-compose.dev.yml
+
+services:
+  clinic-web-app:
+    build: ../apps/clinic-web-app
+    container_name: medcontrol-local-clinic-web-app
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3001
+      VITE_EVENTS_URL: http://localhost:3002
+    volumes:
+      - ../apps/clinic-web-app/src:/app/src
+      - ../apps/clinic-web-app/index.html:/app/index.html
+      - ../apps/clinic-web-app/vite.config.ts:/app/vite.config.ts
+    depends_on:
+      - report-api
+      - events-api

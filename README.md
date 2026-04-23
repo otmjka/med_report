@@ -61,15 +61,19 @@ Add `-v` to also drop the `postgres`, `rabbitmq`, and `artifacts` volumes (full 
 
 ## Frontend (`clinic-web-app`)
 
-The web app runs outside Docker:
+The `docker-compose.local.yml` file includes `docker-compose.dev.yml` and adds the frontend. One command brings up everything:
 
 ```bash
-cd apps/clinic-web-app
-npm install
-npm run dev
+docker-compose -f infra/docker-compose.local.yml up --build
 ```
 
-Vite dev server starts on the port it prints (default 5173). It expects `report-api` on `:3001` and `events-api` on `:3002`.
+Open http://localhost:5173. Container name: `medcontrol-local-clinic-web-app`.
+
+Stop:
+
+```bash
+docker-compose -f infra/docker-compose.local.yml down
+```
 
 ## Local development (without Docker)
 
