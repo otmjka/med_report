@@ -1,4 +1,4 @@
-export { renderCosmofitPdf } from './renderCosmofitPdf.js';
+export { renderCosmofitPdf, type CosmofitSource } from './renderCosmofitPdf.js';
 export {
   renderClientsSummaryXlsx,
   type ClientSummaryRow,

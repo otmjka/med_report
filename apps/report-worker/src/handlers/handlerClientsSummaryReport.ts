@@ -1,12 +1,11 @@
-import { PostgresDataSource } from '../dataSources/index.js';
 import { logger } from '../logger/index.js';
 import {
   ClientSummaryRow,
   renderClientsSummaryXlsx,
 } from '../renderers/index.js';
-import { Generator } from './types.js';
+import { Handler } from './types.js';
 
-const summaryLogger = logger.child({ label: 'generateClientsSummary' });
+const handlerLogger = logger.child({ label: 'handlerClientsSummaryReport' });
 
 type SummaryQueryRow = {
   client_id: number;
@@ -35,19 +34,18 @@ const summarySql = `
   ORDER BY c.id ASC
 `;
 
-export const generateClientsSummary: Generator = async ({
+export const handlerClientsSummaryReport: Handler = async ({
   runId,
   artifactsDir,
   pool,
 }) => {
-  const source = new PostgresDataSource(pool);
-  const rows = await source.query<SummaryQueryRow>(summarySql);
-  summaryLogger.info('fetched clients summary', {
+  const result = await pool.query<SummaryQueryRow>(summarySql);
+  handlerLogger.info('fetched clients summary', {
     runId,
-    rowCount: rows.length,
+    rowCount: result.rows.length,
   });
 
-  const data: ClientSummaryRow[] = rows.map((row) => ({
+  const data: ClientSummaryRow[] = result.rows.map((row) => ({
     clientId: row.client_id,
     name: row.name,
     totalReports: Number(row.total_reports),

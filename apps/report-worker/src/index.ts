@@ -2,7 +2,8 @@ import { validatePayload } from './App/schemas.js';
 import { Broker } from './Broker/index.js';
 import Config from './Config.js';
 import { Db } from './Db/index.js';
-import { getGenerator } from './generators/index.js';
+import { handlerClientsSummaryReport } from './handlers/handlerClientsSummaryReport.js';
+import { handlerCosmofitReport } from './handlers/handlerCosmofitReport.js';
 import { logger } from './logger/index.js';
 
 const rootLogger = logger.child({ label: 'root' });
@@ -26,13 +27,27 @@ const start = async () => {
 
     try {
       await db.setReportRunning(runId);
-      const generator = getGenerator(type);
-      const { resultUrl } = await generator({
+      const handlerInput = {
         runId,
         clientId,
         artifactsDir: config.artifactsDir,
         pool: db.pool,
-      });
+      };
+      let resultUrl: string;
+      switch (type) {
+        case 'cosmofit': {
+          ({ resultUrl } = await handlerCosmofitReport(handlerInput));
+          break;
+        }
+        case 'clients-summary': {
+          ({ resultUrl } = await handlerClientsSummaryReport(handlerInput));
+          break;
+        }
+        default: {
+          const exhaustive: never = type;
+          throw new Error(`no handler for type=${exhaustive}`);
+        }
+      }
       await db.setReportDone(runId, resultUrl);
       await broker.publish(`report.${type}.done`, {
         runId,
