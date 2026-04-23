@@ -1,0 +1,27 @@
+{
+  "name": "medcontrol.cloud",
+  "version": "1.0.0",
+  "description": "Report platform prototype.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otmjka/med_report.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/otmjka/med_report/issues"
+  },
+  "homepage": "https://github.com/otmjka/med_report#readme",
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  }
+}

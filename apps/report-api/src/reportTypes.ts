@@ -1,3 +1,3 @@
-export const reportTypes = ['cosmofit'] as const;
+export const reportTypes = ['cosmofit', 'clients-summary'] as const;
 
 export type ReportType = (typeof reportTypes)[number];

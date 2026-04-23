@@ -24,6 +24,7 @@ const start = async () => {
   const sseHub = new SseHub({ logger });
   const app = new App({ logger, config, server, broker, db, sseHub });
 
+  await app.registerStaticArtifacts();
   app.initRoutes();
   await subscribeReportEvents(broker, sseHub);
   await server.startServer();
