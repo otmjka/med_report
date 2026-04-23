@@ -8,7 +8,7 @@ Requirements: Docker + Docker Compose.
 
 ```bash
 cd infra
-docker-compose up --build
+docker-compose -f docker-compose.dev.yml up --build
 ```
 
 Use `-d` to run in the background.
@@ -28,7 +28,7 @@ curl localhost:3001/health
 
 ```bash
 cd infra
-docker-compose down
+docker-compose -f docker-compose.dev.yml down
 ```
 
 ## Services
