@@ -1,8 +1,8 @@
-export type ReportType = 'cosmofit';
+export type ReportType = 'cosmofit' | 'clients-summary';
 
 export type CreateReportRequest = {
   type: ReportType;
-  clientId: number;
+  clientId?: number;
 };
 
 export type CreateReportResponse = {

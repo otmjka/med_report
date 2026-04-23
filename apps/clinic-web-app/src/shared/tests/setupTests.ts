@@ -31,3 +31,26 @@ class LocalStorageMock {
 }
 
 global.localStorage = new LocalStorageMock() as unknown as Storage;
+
+class EventSourceMock {
+  url: string;
+  readyState = 0;
+  onopen: ((ev: Event) => void) | null = null;
+  onmessage: ((ev: MessageEvent) => void) | null = null;
+  onerror: ((ev: Event) => void) | null = null;
+
+  constructor(url: string) {
+    this.url = url;
+  }
+
+  addEventListener() {}
+  removeEventListener() {}
+  dispatchEvent() {
+    return true;
+  }
+  close() {
+    this.readyState = 2;
+  }
+}
+
+global.EventSource = EventSourceMock as unknown as typeof EventSource;
